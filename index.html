@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Väder & Meteorologi – Instuderingsfrågor åk 5</title>
+<style>
+  :root {
+    --blue: #2F6FE3;
+    --blue-dark: #1E4FB0;
+    --blue-light: #EAF1FF;
+    --green: #2FAE60;
+    --green-light: #E7F8ED;
+    --red: #E3542F;
+    --red-light: #FDEDE8;
+    --amber: #E3A62F;
+    --amber-light: #FDF4E3;
+    --ink: #1B2430;
+    --ink-soft: #5B6675;
+    --bg: #F4F7FC;
+    --card: #FFFFFF;
+    --border: #E1E8F4;
+    --radius: 18px;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14181F;
+      --card: #1C222D;
+      --border: #2A3240;
+      --ink: #EDF1F7;
+      --ink-soft: #9AA6B6;
+      --blue-light: #1D2A44;
+      --green-light: #16301F;
+      --red-light: #3A1E17;
+      --amber-light: #372A10;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14181F;
+    --card: #1C222D;
+    --border: #2A3240;
+    --ink: #EDF1F7;
+    --ink-soft: #9AA6B6;
+    --blue-light: #1D2A44;
+    --green-light: #16301F;
+    --red-light: #3A1E17;
+    --amber-light: #372A10;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    min-height: 100%;
+  }
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+  }
+  header.top {
+    position: sticky;
+    top: env(safe-area-inset-top, 0px);
+    background: var(--bg);
+    padding: 10px 0 14px;
+    z-index: 5;
+  }
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .emoji-badge {
+    font-size: 30px;
+    line-height: 1;
+  }
+  h1 {
+    font-size: 20px;
+    margin: 0;
+    line-height: 1.25;
+  }
+  .subtitle {
+    color: var(--ink-soft);
+    font-size: 13px;
+    margin-top: 2px;
+  }
+  .progress-track {
+    margin-top: 14px;
+    height: 8px;
+    border-radius: 99px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--blue), #5B96FF);
+    border-radius: 99px;
+    transition: width .35s ease;
+  }
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 6px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: 0 1px 2px rgba(20,30,50,0.04);
+  }
+
+  .section-tag {
+    display: inline-block;
+    background: var(--blue-light);
+    color: var(--blue);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 99px;
+    margin-bottom: 14px;
+  }
+
+  .question-text {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.45;
+    margin: 0 0 18px;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .option-btn {
+    text-align: left;
+    padding: 13px 16px;
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    color: var(--ink);
+    font-size: 15px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .option-btn:hover:not(:disabled) { border-color: var(--blue); }
+  .option-btn:disabled { cursor: default; }
+  .option-btn.correct {
+    border-color: var(--green);
+    background: var(--green-light);
+    font-weight: 600;
+  }
+  .option-btn.incorrect {
+    border-color: var(--red);
+    background: var(--red-light);
+  }
+
+  textarea.answer-box {
+    width: 100%;
+    min-height: 84px;
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    padding: 12px 14px;
+    font-size: 15px;
+    font-family: inherit;
+    resize: vertical;
+    background: var(--card);
+    color: var(--ink);
+  }
+  textarea.answer-box:focus { outline: none; border-color: var(--blue); }
+
+  .btn {
+    appearance: none;
+    border: none;
+    border-radius: 14px;
+    padding: 13px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--blue);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--blue-dark); }
+  .btn-primary:disabled { background: var(--border); color: var(--ink-soft); cursor: default; }
+  .btn-ghost {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--ink);
+  }
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .btn-row .btn { flex: 1; min-width: 120px; }
+
+  .facit-box {
+    margin-top: 16px;
+    background: var(--blue-light);
+    border-radius: 14px;
+    padding: 14px 16px;
+    font-size: 14.5px;
+    line-height: 1.5;
+  }
+  .facit-box b { color: var(--blue-dark); }
+
+  .self-check-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .self-check-row .btn { flex: 1; }
+  .btn-right {
+    background: var(--green-light);
+    border: 1.5px solid var(--green);
+    color: var(--green);
+  }
+  .btn-wrong {
+    background: var(--red-light);
+    border: 1.5px solid var(--red);
+    color: var(--red);
+  }
+
+  .feedback-banner {
+    margin-top: 14px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 14.5px;
+  }
+  .feedback-banner.correct { background: var(--green-light); color: var(--green); }
+  .feedback-banner.incorrect { background: var(--red-light); color: var(--red); }
+
+  .explanation {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+
+  .hint-btn {
+    background: none;
+    border: none;
+    color: var(--blue);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-bottom: 14px;
+  }
+  .hint-box {
+    background: var(--amber-light);
+    color: #8B5E00;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    margin-bottom: 14px;
+    display: none;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .hint-box { color: #E3B84F; }
+  }
+  :root[data-theme="dark"] .hint-box { color: #E3B84F; }
+
+  /* Start / result screens */
+  .center-card {
+    text-align: center;
+    padding: 40px 24px;
+  }
+  .big-emoji { font-size: 52px; margin-bottom: 8px; }
+  .center-card h2 { font-size: 22px; margin: 6px 0 10px; }
+  .center-card p { color: var(--ink-soft); font-size: 14.5px; line-height: 1.5; margin-bottom: 22px; }
+
+  .score-circle {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: var(--blue-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 0 auto 20px;
+  }
+  .score-circle .num { font-size: 34px; font-weight: 800; color: var(--blue-dark); }
+  .score-circle .lbl { font-size: 12px; color: var(--ink-soft); }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 18px 0 24px;
+    text-align: left;
+  }
+  .category-pill {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+  .category-pill .catname { font-weight: 700; display: block; margin-bottom: 3px; }
+  .category-pill .catscore { color: var(--ink-soft); }
+
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .filter-chip {
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    color: var(--ink-soft);
+    border-radius: 99px;
+    padding: 7px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .filter-chip.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+  }
+
+  footer.note {
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 12px;
+    margin-top: 26px;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ---------- Frågebank ---------- */
+/* type: "mc" (flervalsfråga) eller "open" (eget svar, självrättning) */
+const QUESTIONS = [
+  // 1. Vad är meteorologi?
+  { id: 1, cat: "Meteorologi", type: "mc",
+    q: "Vad studerar man inom meteorologi?",
+    options: ["Rymden och planeterna", "Atmosfären och vädret", "Havens djur", "Jordens inre"],
+    correct: 1,
+    explain: "Meteorologi handlar om att studera atmosfären – till exempel lufttryck, temperatur, vind och fuktighet." },
+  { id: 2, cat: "Meteorologi", type: "open",
+    q: "Ge fyra exempel på sådant man mäter i atmosfären.",
+    model: "T.ex. temperatur, lufttryck, vindstyrka/vindriktning, luftfuktighet och nederbörd.",
+    hint: "Tänk på sådant som nämns i en väderrapport." },
+  { id: 3, cat: "Meteorologi", type: "open",
+    q: "Nämn tre olika sorters väder som kan förekomma (t.ex. värmebölja).",
+    model: "T.ex. värmebölja, storm, snöoväder, torka, skyfall, köldknäpp.",
+    hint: "Tänk på ovanliga eller kraftiga väderhändelser." },
+
+  // 2. Lufttryck
+  { id: 4, cat: "Lufttryck", type: "mc",
+    q: "Vad är lufttryck?",
+    options: ["Hur varmt det är i luften", "Hur mycket luftmolekylerna trycker mot saker", "Hur fort vinden blåser", "Mängden regn som faller"],
+    correct: 1,
+    explain: "Lufttryck är hur mycket luftmolekylerna trycker mot allt som har luft omkring sig." },
+  { id: 5, cat: "Lufttryck", type: "open",
+    q: "Varför trycker luftmolekylerna på oss, trots att vi inte märker det till vardags?",
+    model: "Luften har vikt och molekylerna rör sig hela tiden och krockar med allt omkring – men eftersom trycket är ungefär lika starkt inifrån kroppen som utifrån märker vi det inte.",
+    hint: "Tänk på att luft faktiskt väger något." },
+  { id: 6, cat: "Lufttryck", type: "mc",
+    q: "Vad heter instrumentet man mäter lufttryck med?",
+    options: ["Termometer", "Anemometer", "Barometer", "Regnmätare"],
+    correct: 2,
+    explain: "En barometer används för att mäta lufttrycket, ofta i enheten hektopascal (hPa)." },
+  { id: 7, cat: "Lufttryck", type: "open",
+    q: "I vilken enhet mäts lufttryck, och vad är ett ungefär normalt lufttryck?",
+    model: "Lufttryck mäts i hektopascal (hPa). Normalt lufttryck vid havsytan är ungefär 1013 hPa.",
+    hint: "Enheten börjar på hekto-." },
+  { id: 8, cat: "Lufttryck", type: "open",
+    q: "Förklara varför det kan göra ont i öronen när man flyger eller åker upp på ett högt berg.",
+    model: "Lufttrycket är lägre högre upp. När trycket ändras snabbt hinner inte trycket i örat jämna ut sig lika fort, och det trycker mot trumhinnan.",
+    hint: "Vad händer med lufttrycket när man kommer högre upp?" },
+  { id: 9, cat: "Lufttryck", type: "mc",
+    q: "Vad kallas ett område med hög densitet (tätt mellan luftmolekylerna)?",
+    options: ["Lågtryck (L)", "Högtryck (H)", "Vindtryck (V)", "Molntryck (M)"],
+    correct: 1,
+    explain: "Ett område där luftmolekylerna sitter tätt kallas högtryck och märks med H på väderkartan. Lågtryck märks med L." },
+  { id: 10, cat: "Lufttryck", type: "open",
+    q: "Sant eller falskt: Det är tätare mellan luftmolekylerna högt uppe i atmosfären än nere vid marken. Motivera!",
+    model: "Falskt. Ju högre upp man kommer, desto glesare blir luften – molekylerna sitter tätare nere vid marken.",
+    hint: "Tänk på varför det blir svårare att andas högt upp på ett berg." },
+
+  // 3. Vindar
+  { id: 11, cat: "Vindar", type: "mc",
+    q: "Vad är det som skapar vind?",
+    options: ["Skillnader i lufttryck", "Att jorden snurrar snabbt", "Att molnen rör sig", "Regn som faller"],
+    correct: 0,
+    explain: "Luft rör sig från högtryck mot lågtryck, och den rörelsen är det vi kallar vind." },
+  { id: 12, cat: "Vindar", type: "open",
+    q: "Beskriv med egna ord vad som händer när solen värmer marken – vart tar luften vägen?",
+    model: "Solen värmer marken, marken värmer luften ovanför, den varma luften blir lättare och stiger uppåt. Kall luft strömmar då in där den varma luften lämnat plats.",
+    hint: "Varm luft är lättare än kall luft – vad gör den då?" },
+  { id: 13, cat: "Vindar", type: "mc",
+    q: "Vad kallas effekten som gör att vindar böjer av åt höger på norra halvklotet?",
+    options: ["Corioliseffekten", "Gravitationseffekten", "Vindeffekten", "Tryckeffekten"],
+    correct: 0,
+    explain: "Corioliseffekten uppstår på grund av jordens rotation och böjer av vindarna åt höger på norra halvklotet." },
+  { id: 14, cat: "Vindar", type: "mc",
+    q: "Vad heter instrumentet som mäter vindens hastighet?",
+    options: ["Barometer", "Anemometer", "Termometer", "Hygrometer"],
+    correct: 1,
+    explain: "En anemometer (vindsnurra) mäter vindens hastighet, ofta i meter per sekund (m/s)." },
+  { id: 15, cat: "Vindar", type: "open",
+    q: "Förklara skillnaden mellan sjöbris och landbris. När på dygnet blåser vardera?",
+    model: "Sjöbris blåser in mot land på dagen, då marken är varmare än havet. Landbris blåser ut mot havet på natten, då marken har svalnat mer än havet.",
+    hint: "Dag = från havet. Natt = mot havet." },
+  { id: 16, cat: "Vindar", type: "open",
+    q: "Vad kallas en vind på ca 8–14 m/s, och vad märker man då?",
+    model: "Det kallas ungefär frisk vind/hård vind (beroende på skala). Man märker t.ex. att grenar rör sig, damm och löv virvlar upp, och det kan vara svårt att hålla i ett paraply.",
+    hint: "Titta på vindstyrke-tabellen i boken för exakt beteckning." },
+  { id: 17, cat: "Vindar", type: "open",
+    q: "Ungefär hur många m/s blåser det vid en storm?",
+    model: "Ungefär 24–32 m/s räknas som storm.",
+    hint: "Det är betydligt mer än en frisk vind." },
+
+  // 4. Moln
+  { id: 18, cat: "Moln", type: "mc",
+    q: "Hur bildas moln?",
+    options: ["När sand virvlar upp i luften", "När vatten i luften kyls ner och bildar droppar eller iskristaller", "När solen värmer marken", "När lufttrycket är exakt 1013 hPa"],
+    correct: 1,
+    explain: "Moln bildas när vattenånga i luften kyls ner så mycket att den kondenserar till små vattendroppar eller iskristaller." },
+  { id: 19, cat: "Moln", type: "open",
+    q: "Vad innehåller ett moln?",
+    model: "Ett moln består av väldigt många små vattendroppar eller iskristaller som svävar i luften.",
+    hint: "Tänk på vad som bildas när vattenånga kyls ner." },
+  { id: 20, cat: "Moln", type: "mc",
+    q: "Vad kallas stackmoln med ett annat namn?",
+    options: ["Cumulonimbus-moln", "Cirrus-moln", "Cumulus-moln", "Stratus-moln"],
+    correct: 2,
+    explain: "Stackmoln kallas också cumulusmoln – de är bulliga upptill och ganska platta undertill, och kallas ibland 'vackertvädermoln'." },
+  { id: 21, cat: "Moln", type: "open",
+    q: "Vad kallas bymoln med ett annat namn?",
+    model: "Bymoln kallas också cumulonimbus-moln.",
+    hint: "Namnet liknar cumulus men med ett tillägg." },
+  { id: 22, cat: "Moln", type: "mc",
+    q: "Vilken sorts moln ger ofta regn, åska, hagel och ibland tromber?",
+    options: ["Stackmoln", "Bymoln", "Dimma", "Höga tunna moln"],
+    correct: 1,
+    explain: "Bymoln (cumulonimbus) är stora, gråa och tjocka och ger ofta oväder: regn, åska, hagel, snö och ibland tromber." },
+  { id: 23, cat: "Moln", type: "open",
+    q: "Vad är en tromb?",
+    model: "En tromb är en kraftig, snurrande virvelvind som hänger ner från ett moln (ofta ett bymoln) och kan orsaka stor skada.",
+    hint: "Tänk på Sveriges mildare variant av en tornado." },
+
+  // 5. Nederbörd
+  { id: 24, cat: "Nederbörd", type: "open",
+    q: "Vad menas med nederbörd? Ge tre exempel.",
+    model: "Nederbörd är vatten som faller från molnen ner mot marken, t.ex. regn, snö, hagel eller underkylt regn.",
+    hint: "Allt som 'faller ner' från himlen och är vatten i någon form." },
+  { id: 25, cat: "Nederbörd", type: "mc",
+    q: "I vilken enhet mäter man nederbörd?",
+    options: ["Liter", "Centimeter", "Millimeter", "Gram"],
+    correct: 2,
+    explain: "Nederbörd mäts i millimeter (mm) – det vill säga hur högt vattnet skulle stå i en rak burk." },
+  { id: 26, cat: "Nederbörd", type: "open",
+    q: "Hur bildas regn?",
+    model: "Små vattendroppar i molnet växer och slås ihop till större droppar, och när de blir tillräckligt tunga faller de ner som regn.",
+    hint: "Tänk på vad som händer när många små droppar i ett moln växer sig större." },
+  { id: 27, cat: "Nederbörd", type: "mc",
+    q: "Hur bildas hagel?",
+    options: ["Snö som smälter helt och fryser igen på marken", "Regndroppar som fryser och far upp och ner i molnet flera gånger tills de blir stora iskulor", "Damm som fryser i luften", "Vatten som fryser i marken"],
+    correct: 1,
+    explain: "Hagel bildas när regndroppar fryser och följer upp- och nedvindar inne i molnet flera gånger, tills de blir tunga nog att falla ner som iskulor." },
+  { id: 28, cat: "Nederbörd", type: "open",
+    q: "Varför faller inte snö lika fort som regn eller hagel?",
+    model: "Snöflingor är lätta, luftiga och har stor yta i förhållande till vikten, så luftmotståndet bromsar dem mer och de faller långsammare.",
+    hint: "Jämför formen och vikten på en snöflinga med en regndroppe eller hagelsten." },
+  { id: 29, cat: "Nederbörd", type: "open",
+    q: "Varför kan det bli väldigt kallt på natten i en öken, trots att det är mycket varmt på dagen?",
+    model: "I öknen finns det väldigt lite fukt/moln i luften. Molnfri himmel gör att värmen strålar ut och försvinner snabbt på natten, eftersom inga moln håller kvar värmen.",
+    hint: "Tänk på vad moln gör med värmen på natten – och att öknar oftast har klar himmel." },
+
+  // 6. Väderprognoser
+  { id: 30, cat: "Väderprognoser", type: "mc",
+    q: "Vad heter myndigheten i Sverige som tar fram väderprognoser?",
+    options: ["SMHI", "SVT", "SCB", "SGU"],
+    correct: 0,
+    explain: "SMHI står för Sveriges meteorologiska och hydrologiska institut." },
+  { id: 31, cat: "Väderprognoser", type: "open",
+    q: "Ge exempel på tre saker SMHI varnar för.",
+    model: "T.ex. storm/kraftig vind, skyfall/kraftigt regn, snöoväder, åska, höga vattenflöden, skogsbrand eller extrem kyla/värme.",
+    hint: "Tänk på farligt väder som kan skada saker eller vara farligt för människor." },
+  { id: 32, cat: "Väderprognoser", type: "open",
+    q: "Vilka fem saker mäter en automatisk väderstation?",
+    model: "T.ex. temperatur, lufttryck, vindstyrka/vindriktning, luftfuktighet och nederbörd.",
+    hint: "Samma typ av saker som nämns tidigast i texten om vad man mäter i atmosfären." },
+  { id: 33, cat: "Väderprognoser", type: "mc",
+    q: "Vad används väderballonger till?",
+    options: ["Att mäta vind, temperatur och luftfuktighet på olika höjder", "Att skicka satelliter till rymden", "Att transportera vatten till moln", "Att varna för åska"],
+    correct: 0,
+    explain: "Under väderballongen hänger instrument som mäter vind, temperatur och luftfuktighet på olika höjder i atmosfären." },
+  { id: 34, cat: "Väderprognoser", type: "open",
+    q: "Nämn tre olika sätt (förutom väderstationer och ballonger) som man kan använda för att observera vädret.",
+    model: "T.ex. väderradar, väder- och satellitbilder, mätningar från flygplan eller fartyg.",
+    hint: "Tänk på tekniker som 'ser' vädret uppifrån eller på avstånd." },
+  { id: 35, cat: "Väderprognoser", type: "open",
+    q: "Varför är det svårt att göra helt säkra väderprognoser, särskilt långt fram i tiden?",
+    model: "Vädret styrs av väldigt många faktorer som hela tiden ändras och påverkar varandra, så små skillnader i mätningarna kan ge stora skillnader i hur vädret faktiskt blir längre fram.",
+    hint: "Tänk på hur många saker som samtidigt påverkar vädret." },
+
+  // 7. Sammanfattande frågor
+  { id: 36, cat: "Sammanfattning", type: "open",
+    q: "En meteorolog behöver observera sex olika saker för att göra en väderprognos. Skriv upp alla sex och förklara kort vad var och en betyder.",
+    model: "T.ex.: 1) Temperatur – hur varmt/kallt det är. 2) Lufttryck – hur hårt luften trycker. 3) Vindstyrka/vindriktning – hur hårt och varifrån det blåser. 4) Luftfuktighet – hur mycket vattenånga som finns i luften. 5) Nederbörd – hur mycket regn/snö/hagel som faller. 6) Molnighet – hur mycket och vilken sorts moln som finns.",
+    hint: "Samla ihop alla mätvärden som nämnts i de tidigare avsnitten." },
+  { id: 37, cat: "Sammanfattning", type: "open",
+    q: "Beskriv med egna ord hur vind uppstår – från att solen värmer marken till att det blåser.",
+    model: "Solen värmer marken olika mycket på olika ställen. Där marken blir varmast värms luften och stiger, vilket sänker lufttrycket där. Kallare, tyngre luft strömmar då in för att fylla ut, och den luftrörelsen är vind.",
+    hint: "Koppla ihop uppvärmning, stigande luft och lufttrycksskillnader." },
+  { id: 38, cat: "Sammanfattning", type: "open",
+    q: "Förklara med egna ord: varför blir det ofta regnigt och blåsigt vid lågtryck på sommaren, men soligt vid högtryck?",
+    model: "Vid lågtryck stiger luften, kyls ner och bildar moln och nederbörd, vilket ofta ger regnigt och blåsigt väder. Vid högtryck sjunker luften istället, vilket motverkar molnbildning och ofta ger klar himmel och sol.",
+    hint: "Tänk på om luften stiger eller sjunker vid låg- respektive högtryck." },
+
+  // 8. Ordlista
+  { id: 39, cat: "Ordlista", type: "open",
+    q: "Förklara med egna ord: Atmosfär",
+    model: "Det lufthölje av gaser som omger jorden.",
+    hint: "Det vi andas och det vädret händer i." },
+  { id: 40, cat: "Ordlista", type: "open",
+    q: "Förklara med egna ord: Corioliseffekten",
+    model: "Effekten som gör att vindar (och andra rörelser) böjer av på grund av jordens rotation – åt höger på norra halvklotet.",
+    hint: "Har med jordens snurrande att göra." },
+  { id: 41, cat: "Ordlista", type: "open",
+    q: "Förklara med egna ord: Kondensation",
+    model: "När vattenånga (gas) kyls ner och blir till flytande vatten, t.ex. droppar i ett moln.",
+    hint: "Motsatsen till avdunstning." },
+];
+
+/* ---------- App-state ---------- */
+const CATEGORIES = [...new Set(QUESTIONS.map(q => q.cat))];
+let state = {
+  screen: "start",        // start | quiz | result
+  filterCat: "Alla",
+  pool: [],                // aktiv frågelista
+  index: 0,
+  answers: {},             // id -> true/false
+  answered: false,          // har nuvarande fråga besvarats
+  selectedOption: null,
+  hintShown: false,
+};
+
+function buildPool() {
+  const list = state.filterCat === "Alla" ? QUESTIONS : QUESTIONS.filter(q => q.cat === state.filterCat);
+  state.pool = shuffle([...list]);
+  state.index = 0;
+  state.answers = {};
+  state.answered = false;
+  state.selectedOption = null;
+  state.hintShown = false;
+}
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function render() {
+  const app = document.getElementById("app");
+  if (state.screen === "start") app.innerHTML = renderStart();
+  else if (state.screen === "quiz") app.innerHTML = renderQuiz();
+  else app.innerHTML = renderResult();
+  attachHandlers();
+}
+
+function renderStart() {
+  const chips = ["Alla", ...CATEGORIES].map(c =>
+    `<button class="filter-chip ${state.filterCat === c ? 'active' : ''}" data-cat="${c}">${c}</button>`
+  ).join("");
+  const count = state.filterCat === "Alla" ? QUESTIONS.length : QUESTIONS.filter(q => q.cat === state.filterCat).length;
+  return `
+    <header class="top">
+      <div class="title-row">
+        <div class="emoji-badge">🌦️</div>
+        <div>
+          <h1>Väder & Meteorologi</h1>
+          <div class="subtitle">Instuderingsfrågor – Fysik, åk 5</div>
+        </div>
+      </div>
+    </header>
+    <div class="card center-card">
+      <div class="big-emoji">🌤️</div>
+      <h2>Redo att öva?</h2>
+      <p>Välj ett avsnitt eller kör alla frågor blandat. Vissa frågor är flervalsfrågor, andra svarar du med egna ord – sedan jämför du med facit och avgör själv om du hade rätt. Svaret behöver inte vara ordagrant likadant som i boken!</p>
+      <div class="filter-row" style="justify-content:center;">${chips}</div>
+      <button class="btn btn-primary" id="start-btn" style="width:100%;">Starta (${count} frågor)</button>
+    </div>
+    <footer class="note">Baserat på kapitlet om meteorologi, sidorna 19–27.</footer>
+  `;
+}
+
+function renderQuiz() {
+  const q = state.pool[state.index];
+  const total = state.pool.length;
+  const pct = Math.round((state.index / total) * 100);
+  const answeredCount = Object.keys(state.answers).length;
+
+  let bodyHtml = "";
+  if (q.type === "mc") {
+    bodyHtml = `
+      <div class="options">
+        ${q.options.map((opt, i) => {
+          let cls = "option-btn";
+          if (state.answered) {
+            if (i === q.correct) cls += " correct";
+            else if (i === state.selectedOption) cls += " incorrect";
+          }
+          return `<button class="${cls}" data-opt="${i}" ${state.answered ? "disabled" : ""}>${opt}</button>`;
+        }).join("")}
+      </div>
+      ${state.answered ? `
+        <div class="feedback-banner ${state.selectedOption === q.correct ? 'correct' : 'incorrect'}">
+          ${state.selectedOption === q.correct ? "✅ Rätt!" : "❌ Inte riktigt."}
+        </div>
+        <div class="explanation">${q.explain}</div>
+      ` : ""}
+    `;
+  } else {
+    bodyHtml = `
+      ${q.hint ? `<button class="hint-btn" id="hint-btn">💡 Visa ledtråd</button>
+      <div class="hint-box" id="hint-box">${q.hint}</div>` : ""}
+      <textarea class="answer-box" id="open-answer" placeholder="Skriv ditt svar här..." ${state.answered ? "disabled" : ""}></textarea>
+      ${!state.answered ? `
+        <div class="btn-row">
+          <button class="btn btn-primary" id="check-btn" style="flex:1;">Visa facit</button>
+        </div>
+      ` : `
+        <div class="facit-box"><b>Facit:</b> ${q.model}</div>
+        ${state.selectedOption === null ? `
+          <div class="self-check-row">
+            <button class="btn btn-right" id="mark-right">✅ Jag hade rätt</button>
+            <button class="btn btn-wrong" id="mark-wrong">❌ Jag missade något</button>
+          </div>
+        ` : `
+          <div class="feedback-banner ${state.selectedOption ? 'correct' : 'incorrect'}">
+            ${state.selectedOption ? "Bra jobbat! ✅" : "Ingen fara, nu vet du det till nästa gång. 💪"}
+          </div>
+        `}
+      `}
+    `;
+  }
+
+  return `
+    <header class="top">
+      <div class="title-row">
+        <div class="emoji-badge">🌦️</div>
+        <div>
+          <h1>Väder & Meteorologi</h1>
+          <div class="subtitle">Fråga ${state.index + 1} av ${total} · ${answeredCount} besvarade</div>
+        </div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </header>
+    <div class="card">
+      <div class="section-tag">${q.cat}</div>
+      <p class="question-text">${q.q}</p>
+      ${bodyHtml}
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" id="quit-btn">Avsluta</button>
+      <button class="btn btn-primary" id="next-btn" ${state.answered ? "" : "disabled"}>${state.index + 1 === total ? "Se resultat" : "Nästa fråga"}</button>
+    </div>
+  `;
+}
+
+function renderResult() {
+  const total = state.pool.length;
+  const correctCount = Object.values(state.answers).filter(Boolean).length;
+  const pct = total ? Math.round((correctCount / total) * 100) : 0;
+  let msg = "Bra jobbat!";
+  if (pct === 100) msg = "Perfekt! Du kan det här utantill! 🌟";
+  else if (pct >= 75) msg = "Riktigt bra jobbat! 🎉";
+  else if (pct >= 50) msg = "Bra försök – öva lite till! 💪";
+  else msg = "Fortsätt öva, det kommer sitta! 📚";
+
+  const catStats = {};
+  state.pool.forEach(q => {
+    if (!catStats[q.cat]) catStats[q.cat] = { total: 0, correct: 0 };
+    catStats[q.cat].total++;
+    if (state.answers[q.id]) catStats[q.cat].correct++;
+  });
+  const catHtml = Object.entries(catStats).map(([cat, s]) =>
+    `<div class="category-pill"><span class="catname">${cat}</span><span class="catscore">${s.correct}/${s.total} rätt</span></div>`
+  ).join("");
+
+  return `
+    <header class="top">
+      <div class="title-row">
+        <div class="emoji-badge">🌦️</div>
+        <div>
+          <h1>Väder & Meteorologi</h1>
+          <div class="subtitle">Resultat</div>
+        </div>
+      </div>
+    </header>
+    <div class="card center-card">
+      <div class="score-circle">
+        <div class="num">${correctCount}/${total}</div>
+        <div class="lbl">rätt</div>
+      </div>
+      <h2>${msg}</h2>
+      <p>Du klarade ${pct}% av frågorna om ${state.filterCat === "Alla" ? "hela kapitlet" : state.filterCat.toLowerCase()}.</p>
+      <div class="category-grid">${catHtml}</div>
+      <button class="btn btn-primary" id="retry-btn" style="width:100%; margin-bottom:10px;">Kör igen</button>
+      <button class="btn btn-ghost" id="home-btn" style="width:100%;">Tillbaka till start</button>
+    </div>
+  `;
+}
+
+function attachHandlers() {
+  if (state.screen === "start") {
+    document.querySelectorAll(".filter-chip").forEach(btn => {
+      btn.onclick = () => { state.filterCat = btn.dataset.cat; render(); };
+    });
+    document.getElementById("start-btn").onclick = () => {
+      buildPool();
+      state.screen = "quiz";
+      render();
+    };
+  } else if (state.screen === "quiz") {
+    const q = state.pool[state.index];
+
+    if (q.type === "mc") {
+      document.querySelectorAll(".option-btn").forEach(btn => {
+        btn.onclick = () => {
+          if (state.answered) return;
+          const i = parseInt(btn.dataset.opt, 10);
+          state.selectedOption = i;
+          state.answered = true;
+          state.answers[q.id] = (i === q.correct);
+          render();
+        };
+      });
+    } else {
+      const hintBtn = document.getElementById("hint-btn");
+      if (hintBtn) {
+        hintBtn.onclick = () => {
+          document.getElementById("hint-box").style.display = "block";
+          hintBtn.style.display = "none";
+        };
+      }
+      const checkBtn = document.getElementById("check-btn");
+      if (checkBtn) {
+        checkBtn.onclick = () => {
+          state.answered = true;
+          state.selectedOption = null; // väntar på självrättning
+          render();
+        };
+      }
+      const markRight = document.getElementById("mark-right");
+      const markWrong = document.getElementById("mark-wrong");
+      if (markRight) markRight.onclick = () => { state.selectedOption = true; state.answers[q.id] = true; render(); };
+      if (markWrong) markWrong.onclick = () => { state.selectedOption = false; state.answers[q.id] = false; render(); };
+    }
+
+    document.getElementById("quit-btn").onclick = () => {
+      state.screen = "start";
+      render();
+    };
+    document.getElementById("next-btn").onclick = () => {
+      if (!state.answered) return;
+      if (state.index + 1 >= state.pool.length) {
+        state.screen = "result";
+      } else {
+        state.index++;
+        state.answered = false;
+        state.selectedOption = null;
+        state.hintShown = false;
+      }
+      render();
+    };
+  } else {
+    document.getElementById("retry-btn").onclick = () => {
+      buildPool();
+      state.screen = "quiz";
+      render();
+    };
+    document.getElementById("home-btn").onclick = () => {
+      state.screen = "start";
+      render();
+    };
+  }
+}
+
+render();
+</script>
+</body>
+</html>
